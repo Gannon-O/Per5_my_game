@@ -3,11 +3,22 @@
 # this is where we import libraries and modules
 import pygame as pg
 from settings import *
-from sprites import *
+# from sprites import *
+from sprites_side_scroller import *
 from tilemap import *
 from os import path
 import sys
 # we are editing this file after installing git
+
+'''
+GOALS:
+RULES:
+FEEDBACK:
+FREEDOM:
+
+What's the sentence: Player 1 collides with enemy and enemy bounces off...
+
+'''
 
 # create a game class that carries all the properties of the game and methods
 class Game:
@@ -31,6 +42,7 @@ class Game:
     self.all_sprites = pg.sprite.Group()
     self.all_walls = pg.sprite.Group()
     self.all_powerups = pg.sprite.Group()
+    self.all_coins = pg.sprite.Group()
     # instantiating the class to create the player object 
     # self.player = Player(self, 5, 5)
     # self.mob = Mob(self, 100, 100)
@@ -51,6 +63,9 @@ class Game:
           self.player = Player(self, col, row)
         if tile == 'U':
           Powerup(self, col, row)
+        if tile == 'C':
+          Coin(self, col, row)
+    
     for i in range(1000):
       Powerup(self,randint(0, WIDTH),randint(0, HEIGHT))
 
@@ -91,9 +106,9 @@ class Game:
     self.screen.fill((BLACK))
     self.all_sprites.draw(self.screen)
     self.draw_text(self.screen, "cheeza geeza joa", 24, WHITE, WIDTH/2, HEIGHT/2)
+    self.draw_text(self.screen, "Coins:" + str(self.player.coin_count), 24, WHITE, WIDTH/30, HEIGHT/15)
     self.draw_text(self.screen, str(self.dt*1000), 24, WHITE, WIDTH/30, HEIGHT/30)
     pg.display.flip()
-
 if __name__ == "__main__":
   # instantiate
   print("main is running...")
