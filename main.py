@@ -105,7 +105,6 @@ class Game:
   def draw(self):
     self.screen.fill((BLACK))
     self.all_sprites.draw(self.screen)
-    self.draw_text(self.screen, "cheeza geeza joa", 24, WHITE, WIDTH/2, HEIGHT/2)
     self.draw_text(self.screen, "Coins:" + str(self.player.coin_count), 24, WHITE, WIDTH/30, HEIGHT/15)
     self.draw_text(self.screen, str(self.dt*1000), 24, WHITE, WIDTH/30, HEIGHT/30)
     pg.display.flip()

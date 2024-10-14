@@ -88,7 +88,7 @@ class Player(Sprite):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits: 
             if str(hits [0].__class__.__name__) == "Powerup":
-                self.speed = 100
+                self.speed = 25
                 print("I've gotten a powerup!")
         if hits: 
          if str(hits[0].__class__.__name__) == "Coin":
