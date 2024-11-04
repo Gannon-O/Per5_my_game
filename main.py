@@ -11,7 +11,7 @@ import sys
 # we are editing this file after installing git
 
 '''
-GOALS:
+GOALS: Add lives, shooting mobs, death, more levels 5 or 10, must collect all coins
 RULES:
 FEEDBACK:
 FREEDOM:
@@ -33,24 +33,19 @@ class Game:
     self.playing = True
   # this is where the game creates the stuff you see and hear
   def load_data(self):
+  # select the map file 
     self.game_folder = path.dirname(__file__)
-    self.map = Map(path.join(self.game_folder, 'level1.txt'))
-  def new(self):
-    self.load_data()
-    print(self.map.data)
-    # create the all sprites group to allow for batch updates and draw methods
-    self.all_sprites = pg.sprite.Group()
-    self.all_walls = pg.sprite.Group()
-    self.all_powerups = pg.sprite.Group()
-    self.all_coins = pg.sprite.Group()
-    # instantiating the class to create the player object 
-    # self.player = Player(self, 5, 5)
-    # self.mob = Mob(self, 100, 100)
-    # self.wall = Wall(self, WIDTH//2, HEIGHT//2)
-    # # instantiates wall and mob objects
-    # for i in range(12):
-    #   Wall(self, TILESIZE*i, HEIGHT/2)
-    #   Mob(self, TILESIZE*i, TILESIZE*i)
+  # selects the map folder we want to use
+    self.map = Map(path.join(self.game_folder,'level1.txt'))
+  # loads the new level when checkpoint is reached
+  def load_level(self, level):
+    # kills all sprites to free memory
+    for s in self.all_sprites:
+      s.kill()
+      print(len(self.all_sprites))
+      # from load data to create new map object with level parameter
+    self.map = Map(path.join(self.game_folder, level)) 
+  
     for row, tiles in enumerate(self.map.data):
       print(row*TILESIZE)
       for col, tile in enumerate(tiles):
@@ -65,6 +60,35 @@ class Game:
           Powerup(self, col, row)
         if tile == 'C':
           Coin(self, col, row)
+        if tile == 'E':
+           Portal(self, col, row)
+    
+  def new(self):
+    self.load_data()
+    print(self.map.data)
+    # create the all sprites group to allow for batch updates and draw methods
+    self.all_sprites = pg.sprite.Group()
+    self.all_walls = pg.sprite.Group()
+    self.all_powerups = pg.sprite.Group()
+    self.all_coins = pg.sprite.Group()
+    self.all_portals = pg.sprite.Group()
+    for row, tiles in enumerate(self.map.data):
+      print(row*TILESIZE)
+      for col, tile in enumerate(tiles):
+        print(col*TILESIZE)
+        if tile == '1':
+          Wall(self, col, row)
+        if tile == 'M':
+          Mob(self, col, row)
+        if tile == 'P':
+          self.player = Player(self, col, row)
+        if tile == 'U':
+          Powerup(self, col, row)
+        if tile == 'C':
+          Coin(self, col, row)
+        if tile == 'E':
+           Portal(self, col, row)
+    
     
     for i in range(1000):
       Powerup(self,randint(0, WIDTH),randint(0, HEIGHT))
