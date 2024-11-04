@@ -5,21 +5,23 @@ from pygame.sprite import Sprite
 from settings import *
 from random import randint
 import time
+import os
+
 
 vec = pg.math.Vector2
 
 
-
 # create the player class with a superclass of Sprite
 class Player(Sprite):
-    # this initializes the properties of the player class including the x y location, and the game parameter so that the the player can interact logically with
-    # other elements in the game...
+    # this initializes the properties of the player class including the x y location, and the game parameter so that the the player can interact logically with other elements in the game...
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((32, 32))
-        self.image.fill((255, 0, 0))
+        # self.image = pg.Surface((32, 32))
+        # self.image.fill((255, 0, 0))
+        self.image = self.game.player_img
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         # self.rect.x = x
         # self.rect.y = y
@@ -55,7 +57,7 @@ class Player(Sprite):
             self.jumping = True
             self.vel.y = -self.jump_power
             print("im still trying to jump")
-  
+     
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)

@@ -8,6 +8,7 @@ from sprites_side_scroller import *
 from tilemap import *
 from os import path
 import sys
+
 # we are editing this file after installing git
 
 '''
@@ -20,6 +21,11 @@ What's the sentence: Player 1 collides with enemy and enemy bounces off...
 
 '''
 
+
+'''
+Sources:
+https://www.pygame.org/docs/ - Used for 
+'''
 # create a game class that carries all the properties of the game and methods
 class Game:
   # initializes all the things we need to run the game...includes the game clock which can set the FPS
@@ -33,6 +39,9 @@ class Game:
     self.playing = True
   # this is where the game creates the stuff you see and hear
   def load_data(self):
+    self.game_folder = path.dirname(__file__)
+    self.img_folder = path.join(self.game_folder, 'images')
+    self.player_img = pg.image.load(path.join(self.img_folder, 'sprite.png'))
   # select the map file 
     self.game_folder = path.dirname(__file__)
   # selects the map folder we want to use
