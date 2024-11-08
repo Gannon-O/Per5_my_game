@@ -42,6 +42,11 @@ class Game:
     self.game_folder = path.dirname(__file__)
     self.img_folder = path.join(self.game_folder, 'images')
     self.player_img = pg.image.load(path.join(self.img_folder, 'sprite.png'))
+    self.coin_img = pg.image.load(path.join(self.img_folder, 'coin.png'))
+    self.powerup_img = pg.image.load(path.join(self.img_folder, 'powerup.png'))
+    self.portal_img = pg.image.load(path.join(self.img_folder, 'portal.png'))
+    self.mob_img = pg.image.load(path.join(self.img_folder, 'mob.png'))
+    self.wall_img = pg.image.load(path.join(self.img_folder, 'wall.png'))
   # select the map file 
     self.game_folder = path.dirname(__file__)
   # selects the map folder we want to use
