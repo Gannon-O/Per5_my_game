@@ -6,8 +6,8 @@ from settings import *
 from random import randint
 import time
 import os
-
-
+from math import floor
+from utils import Cooldown
 vec = pg.math.Vector2
 
 
@@ -35,6 +35,9 @@ class Player(Sprite):
         self.coin_count = 0
         self.jump_power = 15
         self.jumping = False
+        self.powerup_cd = Cooldown()
+        self.cd = Cooldown()
+        self.can_collect_powerup = True
     def get_keys(self):
         keys = pg.key.get_pressed()
         # if keys[pg.K_w]:
@@ -90,15 +93,25 @@ class Player(Sprite):
     def collide_with_stuff(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits: 
-            if str(hits [0].__class__.__name__) == "Powerup":
-                self.speed = 7
+            if str(hits [0].__class__.__name__) == "Powerup" and self.can_collect_powerup:
+                self.speed = 10
                 print("I've gotten a powerup!") 
+                self.can_collect_powerup = False
+                self.powerup_cd.event_time = floor(pg.time.get_ticks()/1000)
+        
             if str(hits[0].__class__.__name__) == "Coin":
                 print("I got a coin!!!")
                 self.coin_count += 1
             if str(hits[0].__class__.__name__) == "Portal":
                 self.game.load_level("level2.txt")
     def update(self):
+        self.powerup_cd.ticking()
+        if self.powerup_cd.delta > 1:
+            print("i can get a powerup again") 
+            self.can_collect_powerup = True
+        if self.can_collect_powerup:
+            self.collide_with_stuff(self.game.all_powerups, True)
+
         self.acc = vec(0, GRAVITY)
         self.get_keys()
         # self.x += self.vx * self.game.dt
@@ -117,7 +130,6 @@ class Player(Sprite):
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
         # teleport the player to the other side of the screen
-        self.collide_with_stuff(self.game.all_powerups, True)
         self.collide_with_stuff(self.game.all_coins, True)
         self.collide_with_stuff(self.game.all_portals, False)
 
