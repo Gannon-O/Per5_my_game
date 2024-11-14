@@ -33,6 +33,7 @@ class Player(Sprite):
         self.speed = 5
         # self.vx, self.vy = 0, 0
         self.coin_count = 0
+        self.coins = 0
         self.jump_power = 15
         self.jumping = False
         self.powerup_cd = Cooldown()
@@ -131,7 +132,9 @@ class Player(Sprite):
         self.collide_with_walls('y')
         # teleport the player to the other side of the screen
         self.collide_with_stuff(self.game.all_coins, True)
-        self.collide_with_stuff(self.game.all_portals, False)
+        if self.collide_with_stuff(self.game.all_portals, False) and self.coins > 6:
+            self.game.load_level('level2.txt')
+        
 
     
 
