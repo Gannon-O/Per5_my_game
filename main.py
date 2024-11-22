@@ -37,9 +37,11 @@ class Game:
     self.screen = pg.display.set_mode((WIDTH, HEIGHT))
     pg.display.set_caption("Gannon's Coolest Game Ever...")
     self.playing = True
+    self.currentLevel = 1
   # this is where the game creates the stuff you see and hear
   def load_data(self):
     self.game_folder = path.dirname(__file__)
+    self.snd_folder = path.join(self.game_folder, 'sounds')
     self.img_folder = path.join(self.game_folder, 'images')
     self.player_img = pg.image.load(path.join(self.img_folder, 'sprite.png'))
     self.coin_img = pg.image.load(path.join(self.img_folder, 'coin.png'))
@@ -52,13 +54,19 @@ class Game:
   # selects the map folder we want to use
     self.map = Map(path.join(self.game_folder,'level1.txt'))
   # loads the new level when checkpoint is reached
-  def load_level(self, level):
+  # load sounds
+    self.jump_snd = pg.mixer.Sound(path.join(self.snd_folder, 'boing.ogg'))
+    pg.mixer.music.load(path.join(self.snd_folder, 'bckgrd.ogg'))
+    pg.mixer.music.set_volume(0.4)
+    pg.mixer.music.play(loops=-1)
+  def load_next_level(self):
     # kills all sprites to free memory
+    self.currentLevel +=1
     for s in self.all_sprites:
       s.kill()
       print(len(self.all_sprites))
       # from load data to create new map object with level parameter
-    self.map = Map(path.join(self.game_folder, level)) 
+    self.map = Map(path.join(self.game_folder,"level" + str(self.currentLevel) + ".txt")) 
   
     for row, tiles in enumerate(self.map.data):
       print(row*TILESIZE)

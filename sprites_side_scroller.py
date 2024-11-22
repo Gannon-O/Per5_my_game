@@ -58,6 +58,7 @@ class Player(Sprite):
         hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
         self.rect.y -= 2
         if hits and not self.jumping:
+            self.game.jump_snd.play()
             self.jumping = True
             self.vel.y = -self.jump_power
             print("im still trying to jump")
@@ -104,7 +105,7 @@ class Player(Sprite):
                 print("I got a coin!!!")
                 self.coin_count += 1
             if str(hits[0].__class__.__name__) == "Portal":
-                self.game.load_level("level2.txt")
+                self.game.load_next_level()
     def update(self):
         self.powerup_cd.ticking()
         if self.powerup_cd.delta > 1:
@@ -132,8 +133,8 @@ class Player(Sprite):
         self.collide_with_walls('y')
         # teleport the player to the other side of the screen
         self.collide_with_stuff(self.game.all_coins, True)
-        if self.collide_with_stuff(self.game.all_portals, False) and self.coins > 6:
-            self.game.load_level('level2.txt')
+        if self.collide_with_stuff(self.game.all_portals, False) and self.coins > 7:
+            self.game.load_next_level()
         
 
     
