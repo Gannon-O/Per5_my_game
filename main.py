@@ -21,10 +21,11 @@ What's the sentence: Player 1 collides with enemy and enemy bounces off...
 
 '''
 
-#NEED TO GO TO MR COZORT FILES MAIN LINE 83 AND ADD MORE LEVELS7
 '''
 Sources: 
 Chat GPT - Prompt: make me a 32x24 videogame map similar to the one I have where P = Player,M=Mob,1=Wall
+Base Code
+Mr. Cozort Lectures
 '''
 # create a game class that carries all the properties of the game and methods
 class Game:
