@@ -16,3 +16,5 @@ BLACK = (0,0,0)
 WHITE = (255,255,255)
 GOLD = (255,215,0)
 CYAN = (0,255,255)
+
+HS_FILE = "highscore.txt"

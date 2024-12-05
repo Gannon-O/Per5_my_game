@@ -39,9 +39,20 @@ class Game:
     pg.display.set_caption("Gannon's Coolest Game Ever...")
     self.playing = True
     self.currentLevel = 1
+    self.score = 0
+    self.time_to_complete = 0
   # this is where the game creates the stuff you see and hear
   def load_data(self):
     self.game_folder = path.dirname(__file__)
+    # with open(path.join(self.game_folder, HS_FILE), 'w') as f:
+    #   f.write(str(0))
+    try:
+      with open(path.join(self.game_folder,HS_FILE), 'r') as f:
+        self.highscore = int(f.read())
+    except:
+      with open(path.join(self.game_folder, HS_FILE), 'w') as f:
+        f.write(str(0))
+      
     self.snd_folder = path.join(self.game_folder, 'sounds')
     self.img_folder = path.join(self.game_folder, 'images')
     self.player_img = pg.image.load(path.join(self.img_folder, 'sprite.png'))
@@ -90,6 +101,7 @@ class Game:
     self.load_data()
     print(self.map.data)
     # create the all sprites group to allow for batch updates and draw methods
+
     self.all_sprites = pg.sprite.Group()
     self.all_walls = pg.sprite.Group()
     self.all_powerups = pg.sprite.Group()
@@ -135,6 +147,15 @@ class Game:
     for event in pg.event.get():
         if event.type == pg.QUIT:
           self.playing = False
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+          if self.game_timer.current_time < self.best_time:
+            self.best_time = self.time_to_complete
+            with open(path.join(self.game_folder, HS_FILE), 'w') as f:
+              f.write(str(self.game_timer.current_time))
+          if self.playing:
+            self.playing = False
+          self.running = False
   # process
   # this is where the game updates the game state
   def update(self):
