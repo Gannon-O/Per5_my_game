@@ -8,6 +8,7 @@ from sprites_side_scroller import *
 from tilemap import *
 from os import path
 import sys
+from utils import *
 
 # we are editing this file after installing git
 
@@ -41,6 +42,7 @@ class Game:
     self.currentLevel = 1
     self.score = 0
     self.time_to_complete = 0
+    self.running = True
   # this is where the game creates the stuff you see and hear
   def load_data(self):
     self.game_folder = path.dirname(__file__)
@@ -100,6 +102,8 @@ class Game:
   def new(self):
     self.load_data()
     print(self.map.data)
+    self.game_timer = Timer(self)
+
     # create the all sprites group to allow for batch updates and draw methods
 
     self.all_sprites = pg.sprite.Group()
@@ -161,6 +165,8 @@ class Game:
   def update(self):
     # update all the sprites...and I MEAN ALL OF THEM
     self.all_sprites.update()
+    self.game_timer.ticking()
+
   def draw_text(self, surface, text, size, color, x, y):
     font_name = pg.font.match_font('arial')
     font = pg.font.Font(font_name, size)
@@ -175,12 +181,59 @@ class Game:
     self.all_sprites.draw(self.screen)
     self.draw_text(self.screen, "Coins:" + str(self.player.coin_count), 24, WHITE, WIDTH/30, HEIGHT/15)
     self.draw_text(self.screen, str(self.dt*1000), 24, WHITE, WIDTH/30, HEIGHT/30)
+    self.draw_text(self.screen, str(self.game_timer.current_time), 24, WHITE, WIDTH/30, HEIGHT/10)
     pg.display.flip()
+  def show_go_screen(self):
+        # game over/continue
+        self.game_folder = path.dirname(__file__)
+
+        if not self.running:
+            return
+        
+        if path.exists(HS_FILE):
+          print("this exists...")
+          with open(path.join(self.game_folder, HS_FILE), 'r') as f:
+                self.highscore = int(f.read())
+        else:
+          with open(path.join(self.game_folder, HS_FILE), 'w') as f:
+                  f.write(str(0))
+        print("File created and written successfully.")
+        self.screen.fill(BLACK)
+        self.draw_text(self.screen, "GAME OVER", 48, WHITE, WIDTH / 2, HEIGHT / 4)
+        self.draw_text(self.screen, "High Score: " + str(self.highscore), 22, WHITE, WIDTH / 2, HEIGHT / 2)
+        self.draw_text(self.screen, "Press a key to play again", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
+        pg.display.flip()
+        self.wait_for_key()
+
+
+  def wait_for_key(self):
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.running = False
+                if event.type == pg.KEYUP:
+                    waiting = False
+
+if __name__ == "__main__":
+  # instantiate
+  g = Game()
+  g.show_go_screen()
+  while g.playing:
+    g.new()
+    g.run()
+  
+
 if __name__ == "__main__":
   # instantiate
   print("main is running...")
   g = Game()
   print("main is running...")
-  g.new()
-  g.run()
-  
+  # g.new()
+  # g.run()
+  g.show_go_screen()
+  while g.playing:
+    g.new()
+    g.run()
