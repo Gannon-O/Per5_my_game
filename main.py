@@ -46,14 +46,17 @@ class Game:
   # this is where the game creates the stuff you see and hear
   def load_data(self):
     self.game_folder = path.dirname(__file__)
+    
+
     # with open(path.join(self.game_folder, HS_FILE), 'w') as f:
     #   f.write(str(0))
-    try:
-      with open(path.join(self.game_folder,HS_FILE), 'r') as f:
-        self.highscore = int(f.read())
-    except:
-      with open(path.join(self.game_folder, HS_FILE), 'w') as f:
-        f.write(str(0))
+    # try:
+    #   with open(path.join(self.game_folder,HS_FILE), 'r') as f:
+    #     self.best_time = int(f.read())
+    # except:
+    #   with open(path.join(self.game_folder, HS_FILE), 'w') as f:
+    #     f.write(str(0))
+    self.check_highscore()
       
     self.snd_folder = path.join(self.game_folder, 'sounds')
     self.img_folder = path.join(self.game_folder, 'images')
@@ -98,7 +101,17 @@ class Game:
           Coin(self, col, row)
         if tile == 'E':
            Portal(self, col, row)
-    
+  def check_highscore(self):
+ # if the file exists
+        if path.exists(HS_FILE):
+          print("this exists...")
+          with open(path.join(self.game_folder, HS_FILE), 'r') as f:
+                self.best_time = int(f.read())
+        else:
+          with open(path.join(self.game_folder, HS_FILE), 'w') as f:
+                self.best_time =  100000
+                f.write(str(100000))
+        print("File created and written successfully.")
   def new(self):
     self.load_data()
     print(self.map.data)
@@ -131,7 +144,6 @@ class Game:
     
     for i in range(1000):
       Powerup(self,randint(0, WIDTH),randint(0, HEIGHT))
-
 # this is a method
 # methods are like functions that are part of a class
 # the run method runs the game loop
@@ -150,11 +162,12 @@ class Game:
   def events(self):
     for event in pg.event.get():
         if event.type == pg.QUIT:
-          self.playing = False
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
+          print(self.game_timer.current_time)
           if self.game_timer.current_time < self.best_time:
-            self.best_time = self.time_to_complete
+            print("i got a best time")
+            print(self.game_timer.current_time)
+            print(self.best_time)
+            self.best_time = self.game_timer.current_time
             with open(path.join(self.game_folder, HS_FILE), 'w') as f:
               f.write(str(self.game_timer.current_time))
           if self.playing:
@@ -166,15 +179,13 @@ class Game:
     # update all the sprites...and I MEAN ALL OF THEM
     self.all_sprites.update()
     self.game_timer.ticking()
-
   def draw_text(self, surface, text, size, color, x, y):
     font_name = pg.font.match_font('arial')
     font = pg.font.Font(font_name, size)
     text_surface = font.render(text, True, color)
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x,y)
-    surface.blit(text_surface, text_rect)
-  
+    surface.blit(text_surface, text_rect) 
   # output
   def draw(self):
     self.screen.fill((BLACK))
@@ -182,58 +193,14 @@ class Game:
     self.draw_text(self.screen, "Coins:" + str(self.player.coin_count), 24, WHITE, WIDTH/30, HEIGHT/15)
     self.draw_text(self.screen, str(self.dt*1000), 24, WHITE, WIDTH/30, HEIGHT/30)
     self.draw_text(self.screen, str(self.game_timer.current_time), 24, WHITE, WIDTH/30, HEIGHT/10)
+    self.draw_text(self.screen, "Best time is " + str(self.best_time), 24, WHITE, WIDTH-900, HEIGHT/200)
+
     pg.display.flip()
-  def show_go_screen(self):
-        # game over/continue
-        self.game_folder = path.dirname(__file__)
-
-        if not self.running:
-            return
-        
-        if path.exists(HS_FILE):
-          print("this exists...")
-          with open(path.join(self.game_folder, HS_FILE), 'r') as f:
-                self.highscore = int(f.read())
-        else:
-          with open(path.join(self.game_folder, HS_FILE), 'w') as f:
-                  f.write(str(0))
-        print("File created and written successfully.")
-        self.screen.fill(BLACK)
-        self.draw_text(self.screen, "GAME OVER", 48, WHITE, WIDTH / 2, HEIGHT / 4)
-        self.draw_text(self.screen, "High Score: " + str(self.highscore), 22, WHITE, WIDTH / 2, HEIGHT / 2)
-        self.draw_text(self.screen, "Press a key to play again", 22, WHITE, WIDTH / 2, HEIGHT * 3 / 4)
-        pg.display.flip()
-        self.wait_for_key()
-
-
-  def wait_for_key(self):
-        waiting = True
-        while waiting:
-            self.clock.tick(FPS)
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    waiting = False
-                    self.running = False
-                if event.type == pg.KEYUP:
-                    waiting = False
-
-if __name__ == "__main__":
-  # instantiate
-  g = Game()
-  g.show_go_screen()
-  while g.playing:
-    g.new()
-    g.run()
-  
-
 if __name__ == "__main__":
   # instantiate
   print("main is running...")
   g = Game()
   print("main is running...")
-  # g.new()
-  # g.run()
-  g.show_go_screen()
-  while g.playing:
-    g.new()
-    g.run()
+  g.new()
+  g.run()
+ 
