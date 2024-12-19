@@ -14,9 +14,9 @@ from utils import *
 
 '''
 GOALS: Add lives, shooting mobs, death, more levels 5 or 10, must collect all coins
-RULES:
-FEEDBACK:
-FREEDOM:
+RULES: Collect all coins to advance 
+FEEDBACK: add a highscore and mobs that kill you
+FREEDOM:x and y movement
 
 What's the sentence: Player 1 collides with enemy and enemy bounces off...
 
@@ -26,7 +26,21 @@ What's the sentence: Player 1 collides with enemy and enemy bounces off...
 Sources: 
 Chat GPT - Prompt: make me a 32x24 videogame map similar to the one I have where P = Player,M=Mob,1=Wall
 Base Code
+
+Some Chat GPT for debugging 
+
 Mr. Cozort Lectures
+
+Create Sprites 
+https://www.piskelapp.com/p/create/sprite
+
+google image search for images for coins, powerups, portals
+
+Sound effects
+https://pixabay.com/sound-effects/search/jump/
+
+For different colors 
+https://www.rapidtables.com/web/color/RGB_Color.html 
 '''
 # create a game class that carries all the properties of the game and methods
 class Game:
@@ -46,6 +60,11 @@ class Game:
   # this is where the game creates the stuff you see and hear
   def load_data(self):
     self.game_folder = path.dirname(__file__)
+    #self.game_folder = path.dirname("c:/Users/G.OLeary27/OneDrive - Bellarmine College Preparatory/Documents/10th Grade/CS Principles/game/Per5_my_game")
+
+    #print(__file__)
+
+    print(self.game_folder)
     
 
     # with open(path.join(self.game_folder, HS_FILE), 'w') as f:
@@ -66,8 +85,7 @@ class Game:
     self.portal_img = pg.image.load(path.join(self.img_folder, 'portal.png'))
     self.mob_img = pg.image.load(path.join(self.img_folder, 'mob.png'))
     self.wall_img = pg.image.load(path.join(self.img_folder, 'wall.png'))
-  # select the map file 
-    self.game_folder = path.dirname(__file__)
+
   # selects the map folder we want to use
     self.map = Map(path.join(self.game_folder,'level1.txt'))
   # loads the new level when checkpoint is reached
@@ -81,14 +99,11 @@ class Game:
     self.currentLevel +=1
     for s in self.all_sprites:
       s.kill()
-      print(len(self.all_sprites))
       # from load data to create new map object with level parameter
     self.map = Map(path.join(self.game_folder,"level" + str(self.currentLevel) + ".txt")) 
   
     for row, tiles in enumerate(self.map.data):
-      print(row*TILESIZE)
       for col, tile in enumerate(tiles):
-        print(col*TILESIZE)
         if tile == '1':
           Wall(self, col, row)
         if tile == 'M':
@@ -104,17 +119,28 @@ class Game:
   def check_highscore(self):
  # if the file exists
         if path.exists(HS_FILE):
-          print("this exists...")
-          with open(path.join(self.game_folder, HS_FILE), 'r') as f:
+          print("This file already exists...")
+          try:
+            with open(path.join(self.game_folder, HS_FILE), 'r') as f:
                 self.best_time = int(f.read())
+                print("successfully opened file")
+                print("current best time is", str(self.best_time))
+          except:
+            print("could not update best time")
         else:
-          with open(path.join(self.game_folder, HS_FILE), 'w') as f:
+          print("the file does not exist, attempting to create file")
+          try:
+            with open(path.join(self.game_folder, HS_FILE), 'w') as f:
                 self.best_time =  100000
                 f.write(str(100000))
-        print("File created and written successfully.")
+                print("sucessfully created file")
+                print("current best time is", str(self.best_time))
+          except:
+            print("could not create file...")
+          
   def new(self):
     self.load_data()
-    print(self.map.data)
+    
     self.game_timer = Timer(self)
 
     # create the all sprites group to allow for batch updates and draw methods
@@ -125,9 +151,7 @@ class Game:
     self.all_coins = pg.sprite.Group()
     self.all_portals = pg.sprite.Group()
     for row, tiles in enumerate(self.map.data):
-      print(row*TILESIZE)
       for col, tile in enumerate(tiles):
-        print(col*TILESIZE)
         if tile == '1':
           Wall(self, col, row)
         if tile == 'M':
@@ -162,14 +186,20 @@ class Game:
   def events(self):
     for event in pg.event.get():
         if event.type == pg.QUIT:
-          print(self.game_timer.current_time)
+
           if self.game_timer.current_time < self.best_time:
-            print("i got a best time")
-            print(self.game_timer.current_time)
-            print(self.best_time)
+            print("you got a best time of", str(self.game_timer.current_time))
             self.best_time = self.game_timer.current_time
-            with open(path.join(self.game_folder, HS_FILE), 'w') as f:
-              f.write(str(self.game_timer.current_time))
+            try:
+              with open(path.join(self.game_folder, HS_FILE), 'w') as f:
+               f.write(str(self.game_timer.current_time))
+              print("sucessfully updated high score file...")
+              print("current best time is", str(self.best_time))
+
+            except:
+              print("could not update highscore file")
+              print("current best time is", str(self.best_time))
+
           if self.playing:
             self.playing = False
           self.running = False
@@ -198,9 +228,7 @@ class Game:
     pg.display.flip()
 if __name__ == "__main__":
   # instantiate
-  print("main is running...")
   g = Game()
-  print("main is running...")
   g.new()
   g.run()
  

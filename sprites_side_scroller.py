@@ -52,8 +52,6 @@ class Player(Sprite):
         if keys[pg.K_SPACE]:
             self.jump()
     def jump(self):
-        print("im trying to jump")
-        print(self.vel.y)
         self.rect.y += 2
         hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
         self.rect.y -= 2
@@ -61,7 +59,6 @@ class Player(Sprite):
             self.game.jump_snd.play()
             self.jumping = True
             self.vel.y = -self.jump_power
-            print("im still trying to jump")
      
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -73,9 +70,7 @@ class Player(Sprite):
                     self.pos.x = hits[0].rect.right
                 self.vel.x = 0
                 self.rect.x = self.pos.x
-            #     print("Collided on x axis")
-            # else:
-            #     print("not working...for hits")
+        
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
             if hits:
@@ -87,29 +82,22 @@ class Player(Sprite):
                 self.vel.y = 0
                 self.rect.y = self.pos.y
                 self.jumping = False
-                # print("Collided on x axis")
-        #     else:
-        #         print("not working...for hits")
-        # # else:
-        #     print("not working for dir check")
+            
     def collide_with_stuff(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits: 
             if str(hits [0].__class__.__name__) == "Powerup" and self.can_collect_powerup:
                 self.speed = 10
-                print("I've gotten a powerup!") 
                 self.can_collect_powerup = False
                 self.powerup_cd.event_time = floor(pg.time.get_ticks()/1000)
         
             if str(hits[0].__class__.__name__) == "Coin":
-                print("I got a coin!!!")
                 self.coin_count += 1
             if str(hits[0].__class__.__name__) == "Portal":
                 self.game.load_next_level()
     def update(self):
         self.powerup_cd.ticking()
         if self.powerup_cd.delta > 1:
-            print("i can get a powerup again") 
             self.can_collect_powerup = True
         if self.can_collect_powerup:
             self.collide_with_stuff(self.game.all_powerups, True)
